@@ -3,15 +3,11 @@ var todayEl = moment().format("LLLL");
 $("#currentDay").text(todayEl);
 // current time in military time represented by num
 var currentTime = parseInt(moment().format("H"));
-
-// set data type attribute of timeblocks to array indexed
+var tasks = [];
 
 
 var auditTime = function () {
-    // get current hour in number type
-    
     for (var i = 9; i < 18; i++) {
-        // i want to acces the correct timeblock directly so i can loop through with i and get a new timeblock to check against the currentTime
         var timeblockEl = $("#" + i);
         if (i < currentTime) {
             timeblockEl.addClass("past");
@@ -23,6 +19,27 @@ var auditTime = function () {
     }
 }
 
+// save to localstorage
+var save = function() {
+    localStorage.setItem("tasks", tasks);
+}
+
+var loadTasks = function() {
+    tasks = localStorage.getItem("tasks").split(',');
+    console.log(tasks);
+    
+    if (tasks) {
+        var j = 9;
+        for (var i = 0; i < 9; i++){
+            var k = j.toString();
+            $("#" + k).text(tasks[i])
+            j++;
+        }
+    } else [
+        tasks = []
+    ]
+    
+}
 // timeblock was clicked to enter task
 $(".description").on("click", function() {
     var text = $(this)
@@ -42,8 +59,12 @@ $(".saveBtn").on("click", function() {
     var descriptionElId = $(descriptionEl).attr("id");
     var replacementEl = $("<div>").addClass("col-md-10 description");
     replacementEl.text(text).attr("id", descriptionElId);
-    console.log(replacementEl);
     descriptionEl.replaceWith(replacementEl);
+    var taskIndex = parseInt(descriptionElId) - 9;
+    tasks[taskIndex] = text;
+    save();
     auditTime();
 })
+
+loadTasks();
 auditTime();
